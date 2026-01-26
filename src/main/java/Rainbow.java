@@ -95,8 +95,7 @@ public class Rainbow {
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println(" [" + storeItems.get(index).getStatusIcon() + "] " + storeItems.get(index).description);
                 printHorizontalLine();
-            }
-            else {
+            } else {
                 // Print message
                 printHorizontalLine();
                 System.out.println(" added: " + user_input);
