@@ -3,7 +3,33 @@ import java.util.ArrayList;
 
 public class Rainbow {
 
-    static ArrayList<String> storeItems = new ArrayList<>();
+    static ArrayList<Task> storeItems = new ArrayList<>();
+
+    public class Task {
+        protected String description;
+        protected boolean isDone;
+
+        public Task(String description) {
+            this.description = description;
+            this.isDone = false;
+        }
+
+        public String getStatusIcon() {
+            return (isDone ? "X" : " "); // mark done task with X
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public void markAsDone() {
+            this.isDone = true;
+        }
+
+        public void markAsNoDone() {
+            this.isDone = false;
+        }
+    }
 
     private static void printHorizontalLine() {
         String horizontalLine = "____________________________________________________________";
@@ -23,7 +49,7 @@ public class Rainbow {
         System.out.println(" Hello! I'm Rainbow");
         System.out.println(" What can I do for you?");
 
-        // Level 1. Echo + Level 2. Add, List
+        // Level 1. Echo + Level 2. Add, List + Level 3. Mark as Done
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String user_input = scanner.nextLine();
@@ -33,9 +59,9 @@ public class Rainbow {
             if (user_input.equals("list")) {
                 // Print message
                 printHorizontalLine();
-                System.out.println(" Here are the items in your list:");
+                System.out.println(" Here are the tasks in your list:");
                 for (int i = 0; i < storeItems.size(); i++) { // Loop through internal storage
-                    System.out.println(" " + (i + 1) + ". " + storeItems.get(i));
+                    System.out.println(" " + (i + 1) + ".[" + storeItems.get(i).getStatusIcon() + "] " + storeItems.get(i).description);
                 }
                 printHorizontalLine();
 
@@ -47,14 +73,38 @@ public class Rainbow {
 
                 // Exit
                 break;
-            } else {
+            } else if (user_input.startsWith("mark")) {
+                // Operation
+                String[] parts = user_input.split(" ");
+                int index = Integer.parseInt(parts[1]) - 1;
+                storeItems.get(index).markAsDone();
+
+                // Print
+                printHorizontalLine();
+                System.out.println(" Nice! I've marked this task as done:");
+                System.out.println(" [" + storeItems.get(index).getStatusIcon() + "] " + storeItems.get(index).description);
+                printHorizontalLine();
+            } else if (user_input.startsWith("unmark")) {
+                // Operation
+                String[] parts = user_input.split(" ");
+                int index = Integer.parseInt(parts[1]) - 1;
+                storeItems.get(index).markAsNoDone();
+
+                // Print
+                printHorizontalLine();
+                System.out.println(" OK, I've marked this task as not done yet:");
+                System.out.println(" [" + storeItems.get(index).getStatusIcon() + "] " + storeItems.get(index).description);
+                printHorizontalLine();
+            }
+            else {
                 // Print message
                 printHorizontalLine();
                 System.out.println(" added: " + user_input);
                 printHorizontalLine();
 
                 // Internal storage
-                storeItems.add(user_input);
+                Task item = new Rainbow().new Task(user_input);
+                storeItems.add(item);
             }
         }
         scanner.close();
