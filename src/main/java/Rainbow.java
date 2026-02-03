@@ -122,7 +122,7 @@ public class Rainbow {
                 // Operation
                 String[] parts = user_input.split(" ");
                 int index = Integer.parseInt(parts[1]) - 1;
-                storeItems.get(index).markAsNoDone();
+                storeItems.get(index).markAsNotDone();
 
                 // Print
                 printHorizontalLine();
