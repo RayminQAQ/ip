@@ -11,13 +11,6 @@ public class Rainbow {
     }
 
     public static void greet() {
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
-
         printHorizontalLine();
         System.out.println(" Hello! I'm Rainbow");
         System.out.println(" What can I do for you?");
@@ -69,7 +62,7 @@ public class Rainbow {
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
             } else if (user_input.startsWith("deadline")) {
-                // Parse input: deadline return book /by Sunday
+                // Parse input example: deadline return book /by Sunday
                 String[] parts = user_input.split(" /by ");
                 String description = parts[0].substring(9); // Remove "deadline "
                 String by = parts.length > 1 ? parts[1] : "";
@@ -85,7 +78,7 @@ public class Rainbow {
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
             } else if (user_input.startsWith("event")) {
-                // Parse input: event project meeting /from Mon 2pm /to 4pm
+                // Parse input example: event project meeting /from Mon 2pm /to 4pm
                 String[] parts = user_input.split(" /from ");
                 String description = parts[0].substring(6); // Remove "event "
 
