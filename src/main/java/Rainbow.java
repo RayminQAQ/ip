@@ -10,7 +10,7 @@ public class Rainbow {
         System.out.println(horizontalLine);
     }
 
-    public static void greet() {
+    private static void greet() {
         printHorizontalLine();
         System.out.println(" Hello! I'm Rainbow");
         System.out.println(" What can I do for you?");
@@ -20,15 +20,21 @@ public class Rainbow {
         // Rename & Greet
         greet();
 
-        // Level 1. Echo + Level 2. Add, List + Level 3. Mark as Done
+        // Input scanner
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            String user_input = scanner.nextLine();
+            // Process input
+            String userinput = scanner.nextLine();
+            String[] partstest = userinput.trim().split(" ", 2);
+            String command = partstest[0];
+            String details = partstest.length > 1 ? partstest[1] : "";
+
+            // Print user input
             printHorizontalLine();
-            System.out.println(" " + user_input);
+            System.out.println(" " + userinput);
 
             // Exit
-            if (user_input.equals("bye")) { // Exit
+            if (command.equals("bye")) { // Exit
                 // Print message
                 printHorizontalLine();
                 System.out.println(" Bye. Hope to see you again soon!");
@@ -39,7 +45,7 @@ public class Rainbow {
             }
 
             // Other operations
-            if (user_input.equals("list")) {
+            if (command.equals("list")) {
                 // Print message
                 printHorizontalLine();
                 System.out.println(" Here are the tasks in your list:");
@@ -47,9 +53,17 @@ public class Rainbow {
                     System.out.println(" " + (index + 1) + ". " + storeItems.get(index));
                 }
                 printHorizontalLine();
-            } else if (user_input.startsWith("todo")) {
+            } else if (command.startsWith("todo")) {
+                // Error checking
+                if (details.isEmpty()) {
+                    printHorizontalLine();
+                    System.out.println(" OOPS!!! The description of a todo cannot be empty.");
+                    printHorizontalLine();
+                    continue;
+                }
+
                 // Extract description after "todo "
-                String description = user_input.substring(5);
+                String description = userinput.substring(5);
 
                 // Create Todo task
                 Todo todo = new Todo(description);
@@ -61,9 +75,9 @@ public class Rainbow {
                 System.out.println("   " + todo);
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
-            } else if (user_input.startsWith("deadline")) {
+            } else if (command.startsWith("deadline")) {
                 // Parse input example: deadline return book /by Sunday
-                String[] parts = user_input.split(" /by ");
+                String[] parts = userinput.split(" /by ");
                 String description = parts[0].substring(9); // Remove "deadline "
                 String by = parts.length > 1 ? parts[1] : "";
 
@@ -77,9 +91,9 @@ public class Rainbow {
                 System.out.println("   " + deadline);
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
-            } else if (user_input.startsWith("event")) {
+            } else if (command.startsWith("event")) {
                 // Parse input example: event project meeting /from Mon 2pm /to 4pm
-                String[] parts = user_input.split(" /from ");
+                String[] parts = userinput.split(" /from ");
                 String description = parts[0].substring(6); // Remove "event "
 
                 String from = "";
@@ -100,9 +114,9 @@ public class Rainbow {
                 System.out.println("   " + event);
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
-            } else if (user_input.startsWith("mark")) {
+            } else if (command.startsWith("mark")) {
                 // Operation
-                String[] parts = user_input.split(" ");
+                String[] parts = userinput.split(" ");
                 int index = Integer.parseInt(parts[1]) - 1;
                 storeItems.get(index).markAsDone();
 
@@ -111,9 +125,9 @@ public class Rainbow {
                 System.out.println(" Nice! I've marked this task as done:");
                 System.out.println(storeItems.get(index));
                 printHorizontalLine();
-            } else if (user_input.startsWith("unmark")) {
+            } else if (command.startsWith("unmark")) {
                 // Operation
-                String[] parts = user_input.split(" ");
+                String[] parts = userinput.split(" ");
                 int index = Integer.parseInt(parts[1]) - 1;
                 storeItems.get(index).markAsNotDone();
 
@@ -123,14 +137,8 @@ public class Rainbow {
                 System.out.println(storeItems.get(index));
                 printHorizontalLine();
             } else {
-                // Print message
-                printHorizontalLine();
-                System.out.println(" added: " + user_input);
-                printHorizontalLine();
-
-                // Internal storage
-                Task item = new Task(user_input);
-                storeItems.add(item);
+                // Unknown command
+                System.out.println(" I'm sorry, I don't understand that command.");
             }
         }
         scanner.close();
