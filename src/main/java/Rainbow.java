@@ -153,6 +153,44 @@ public class Rainbow {
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println(storeItems.get(index));
                 printHorizontalLine();
+            } else if (command.startsWith("delete")) {
+                // Error checking if index is missing
+                if (details.isEmpty()) {
+                    printHorizontalLine();
+                    System.out.println(" OOPS!!! Please specify which task to delete.");
+                    printHorizontalLine();
+                    continue;
+                }
+
+                try {
+                    // Parse the task index
+                    int index = Integer.parseInt(details) - 1;
+
+                    // Check if index is valid
+                    if (index < 0 || index >= storeItems.size()) {
+                        printHorizontalLine();
+                        System.out.println(" OOPS!!! Invalid task number.");
+                        printHorizontalLine();
+                        continue;
+                    }
+
+                    // Get the task before removing it
+                    Task removedTask = storeItems.get(index);
+
+                    // Remove the task
+                    storeItems.remove(index);
+
+                    // Print message
+                    printHorizontalLine();
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + removedTask);
+                    System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
+                    printHorizontalLine();
+                } catch (NumberFormatException e) {
+                    printHorizontalLine();
+                    System.out.println(" OOPS!!! Please provide a valid task number.");
+                    printHorizontalLine();
+                }
             } else {
                 // Unknown command
                 System.out.println(" I'm sorry, I don't understand that command.");
