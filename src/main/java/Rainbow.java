@@ -76,6 +76,14 @@ public class Rainbow {
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
             } else if (command.startsWith("deadline")) {
+                // Error cheching if description is empty
+                if (details.isEmpty()) {
+                    printHorizontalLine();
+                    System.out.println(" OOPS!!! The description of a deadline cannot be empty.");
+                    printHorizontalLine();
+                    continue;
+                }
+
                 // Parse input example: deadline return book /by Sunday
                 String[] parts = userinput.split(" /by ");
                 String description = parts[0].substring(9); // Remove "deadline "
@@ -92,6 +100,15 @@ public class Rainbow {
                 System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
                 printHorizontalLine();
             } else if (command.startsWith("event")) {
+                // Error checking if description is empty
+                if (details.isEmpty()) {
+                    printHorizontalLine();
+                    System.out.println(" OOPS!!! The description of an event cannot be empty.");
+                    printHorizontalLine();
+                    continue;
+                }
+
+
                 // Parse input example: event project meeting /from Mon 2pm /to 4pm
                 String[] parts = userinput.split(" /from ");
                 String description = parts[0].substring(6); // Remove "event "
