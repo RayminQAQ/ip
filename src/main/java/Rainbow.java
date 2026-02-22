@@ -1,13 +1,136 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class Rainbow {
 
     static ArrayList<Task> storeItems = new ArrayList<>();
+    private static final String FILE_PATH = "./data/duke.txt";
 
     private static void printHorizontalLine() {
         String horizontalLine = "____________________________________________________________";
         System.out.println(horizontalLine);
+    }
+
+    /**
+     * Saves all tasks to the data file.
+     */
+    private static void saveTasks() {
+        try {
+            // Create directory if it doesn't exist
+            File file = new File(FILE_PATH);
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
+            // Write tasks to file
+            FileWriter writer = new FileWriter(FILE_PATH);
+            for (Task task : storeItems) {
+                String line = taskToFileFormat(task);
+                writer.write(line + System.lineSeparator());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(" Error saving tasks to file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Converts a Task object to file format string.
+     * Format: TYPE | DONE | DESCRIPTION | [EXTRA_INFO]
+     */
+    private static String taskToFileFormat(Task task) {
+        String type = "";
+        String isDone = task.isDone ? "1" : "0";
+        String details = "";
+
+        if (task instanceof Todo) {
+            type = "T";
+            details = task.description;
+        } else if (task instanceof Deadline) {
+            type = "D";
+            Deadline deadline = (Deadline) task;
+            details = task.description + " | " + deadline.by;
+        } else if (task instanceof Event) {
+            type = "E";
+            Event event = (Event) task;
+            details = task.description + " | " + event.from + " | " + event.to;
+        }
+
+        return type + " | " + isDone + " | " + details;
+    }
+
+    /**
+     * Loads tasks from the data file.
+     */
+    private static void loadTasks() {
+        try {
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                return; // No file to load, start fresh
+            }
+
+            Scanner fileScanner = new Scanner(file);
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                Task task = parseTaskFromFile(line);
+                if (task != null) {
+                    storeItems.add(task);
+                }
+            }
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            // File doesn't exist, start with empty list
+        } catch (Exception e) {
+            System.out.println(" Error loading tasks from file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses a line from the file and creates a Task object.
+     * Format: TYPE | DONE | DESCRIPTION | [EXTRA_INFO]
+     */
+    private static Task parseTaskFromFile(String line) {
+        try {
+            String[] parts = line.split(" \\| ");
+            if (parts.length < 3) {
+                return null;
+            }
+
+            String type = parts[0];
+            boolean isDone = parts[1].equals("1");
+            String description = parts[2];
+
+            Task task = null;
+
+            switch (type) {
+                case "T":
+                    task = new Todo(description);
+                    break;
+                case "D":
+                    String by = parts.length > 3 ? parts[3] : "";
+                    task = new Deadline(description, by);
+                    break;
+                case "E":
+                    String from = parts.length > 3 ? parts[3] : "";
+                    String to = parts.length > 4 ? parts[4] : "";
+                    task = new Event(description, from, to);
+                    break;
+            }
+
+            if (task != null && isDone) {
+                task.markAsDone();
+            }
+
+            return task;
+        } catch (Exception e) {
+            System.out.println(" Error parsing task: " + line);
+            return null;
+        }
     }
 
     private static void greet() {
@@ -17,6 +140,9 @@ public class Rainbow {
     }
 
     public static void main(String[] args) {
+        // Load tasks from file
+        loadTasks();
+
         // Rename & Greet
         greet();
 
@@ -69,6 +195,9 @@ public class Rainbow {
                 Todo todo = new Todo(description);
                 storeItems.add(todo);
 
+                // Save to file
+                saveTasks();
+
                 // Print message
                 printHorizontalLine();
                 System.out.println(" Got it. I've added this task:");
@@ -92,6 +221,9 @@ public class Rainbow {
                 // Create Deadline task
                 Deadline deadline = new Deadline(description, by);
                 storeItems.add(deadline);
+
+                // Save to file
+                saveTasks();
 
                 // Print message
                 printHorizontalLine();
@@ -125,6 +257,9 @@ public class Rainbow {
                 Event event = new Event(description, from, to);
                 storeItems.add(event);
 
+                // Save to file
+                saveTasks();
+
                 // Print message
                 printHorizontalLine();
                 System.out.println(" Got it. I've added this task:");
@@ -137,6 +272,9 @@ public class Rainbow {
                 int index = Integer.parseInt(parts[1]) - 1;
                 storeItems.get(index).markAsDone();
 
+                // Save to file
+                saveTasks();
+
                 // Print
                 printHorizontalLine();
                 System.out.println(" Nice! I've marked this task as done:");
@@ -147,6 +285,9 @@ public class Rainbow {
                 String[] parts = userinput.split(" ");
                 int index = Integer.parseInt(parts[1]) - 1;
                 storeItems.get(index).markAsNotDone();
+
+                // Save to file
+                saveTasks();
 
                 // Print
                 printHorizontalLine();
@@ -179,6 +320,9 @@ public class Rainbow {
 
                     // Remove the task
                     storeItems.remove(index);
+
+                    // Save to file
+                    saveTasks();
 
                     // Print message
                     printHorizontalLine();
