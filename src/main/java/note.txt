@@ -1,0 +1,35 @@
+### branch workflow
+
+# 0) 先確保主分支最新
+> git switch main
+> git pull origin main
+
+# 1) 建立並切到功能分支
+> git switch -c branch-Level-6
+
+# 2) 開發 + commit（可重複很多次）
+> git add .
+> git commit -m "Implement Level-6"
+
+# 3) 第一次推上遠端（建立 tracking）
+> git push -u origin branch-Level-6
+
+# ...中間繼續開發...
+> git add .
+> git commit -m "Refactor Level-6 logic"
+> git push
+
+# 4) 功能完成後，切回 main 並更新
+> git switch main
+> git pull origin main
+
+# 5) 合併功能分支到 main, without fast-forward (保留分支歷史)
+(Not this): git merge branch-Level-6
+> git merge --no-ff branch-Level-5
+
+# 6) 幫這個 merge commit 打 tag
+> git tag -a Level-5 -m "Level-5"
+
+# 7) 推上遠端 main
+> git push origin main
+> git push origin --tags

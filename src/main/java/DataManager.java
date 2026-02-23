@@ -61,11 +61,13 @@ public class DataManager {
         } else if (task instanceof Deadline) {
             type = "D";
             Deadline deadline = (Deadline) task;
-            details = task.description + " | " + deadline.by;
+            // Store the original string to preserve the format
+            details = task.description + " | " + deadline.getByString();
         } else if (task instanceof Event) {
             type = "E";
             Event event = (Event) task;
-            details = task.description + " | " + event.from + " | " + event.to;
+            // Store the original strings to preserve the format
+            details = task.description + " | " + event.getFromString() + " | " + event.getToString();
         }
 
         return type + " | " + isDone + " | " + details;

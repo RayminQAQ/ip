@@ -151,4 +151,29 @@ public class UIManager {
     public void showUnknownCommandError() {
         System.out.println(" I'm sorry, I don't understand that command.");
     }
+
+    /**
+     * Prints tasks occurring on a specific date.
+     */
+    public void showTasksOnDate(ArrayList<Task> tasks, String dateStr) {
+        printHorizontalLine();
+        if (tasks.isEmpty()) {
+            System.out.println(" No tasks found on " + dateStr);
+        } else {
+            System.out.println(" Tasks occurring on " + dateStr + ":");
+            for (int index = 0; index < tasks.size(); index++) {
+                System.out.println(" " + (index + 1) + ". " + tasks.get(index));
+            }
+        }
+        printHorizontalLine();
+    }
+
+    /**
+     * Prints error message for invalid date format.
+     */
+    public void showInvalidDateFormatError() {
+        printHorizontalLine();
+        System.out.println(" OOPS!!! Invalid date format. Please use yyyy-MM-dd or d/M/yyyy format.");
+        printHorizontalLine();
+    }
 }

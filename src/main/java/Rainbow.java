@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Rainbow {
 
@@ -156,12 +159,80 @@ public class Rainbow {
                 } catch (NumberFormatException e) {
                     uiManager.showInvalidNumberFormatError();
                 }
+            } else if (command.startsWith("find")) {
+                // Find tasks on a specific date
+                // Usage: find 2019-12-02 or find 2/12/2019
+                if (details.isEmpty()) {
+                    uiManager.showInvalidDateFormatError();
+                    continue;
+                }
+
+                try {
+                    LocalDate searchDate = parseDate(details);
+                    ArrayList<Task> matchingTasks = findTasksOnDate(searchDate);
+                    uiManager.showTasksOnDate(matchingTasks, searchDate.format(DateTimeFormatter.ofPattern("MMM d yyyy")));
+                } catch (DateTimeParseException e) {
+                    uiManager.showInvalidDateFormatError();
+                }
             } else {
                 // Unknown command
                 uiManager.showUnknownCommandError();
             }
         }
         scanner.close();
+    }
+
+    /**
+     * Parses a date string in multiple formats.
+     */
+    private static LocalDate parseDate(String dateStr) throws DateTimeParseException {
+        String[] formats = {
+            "yyyy-MM-dd",
+            "d/M/yyyy"
+        };
+
+        for (String format : formats) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                return LocalDate.parse(dateStr, formatter);
+            } catch (DateTimeParseException e) {
+                // Continue to next format
+            }
+        }
+
+        throw new DateTimeParseException("Unable to parse date", dateStr, 0);
+    }
+
+    /**
+     * Finds all tasks that occur on a specific date.
+     */
+    private static ArrayList<Task> findTasksOnDate(LocalDate date) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+
+        for (Task task : storeItems) {
+            if (task instanceof Deadline) {
+                Deadline deadline = (Deadline) task;
+                if (deadline.getByDate() != null && deadline.getByDate().equals(date)) {
+                    matchingTasks.add(task);
+                } else if (deadline.getByDateTime() != null && deadline.getByDateTime().toLocalDate().equals(date)) {
+                    matchingTasks.add(task);
+                }
+            } else if (task instanceof Event) {
+                Event event = (Event) task;
+                // Check if the event starts or occurs on this date
+                if (event.getFromDate() != null && event.getFromDate().equals(date)) {
+                    matchingTasks.add(task);
+                } else if (event.getFromDateTime() != null && event.getFromDateTime().toLocalDate().equals(date)) {
+                    matchingTasks.add(task);
+                } else if (event.getToDate() != null && event.getToDate().equals(date)) {
+                    matchingTasks.add(task);
+                } else if (event.getToDateTime() != null && event.getToDateTime().toLocalDate().equals(date)) {
+                    matchingTasks.add(task);
+                }
+            }
+        }
+
+        return matchingTasks;
     }
 
     public static void main(String[] args) {
