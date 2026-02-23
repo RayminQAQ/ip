@@ -24,7 +24,11 @@ public class Rainbow {
             File file = new File(FILE_PATH);
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
+                boolean created = parentDir.mkdirs();
+                if (!created) {
+                    System.out.println(" Error: Failed to create data directory.");
+                    return;
+                }
             }
 
             // Write tasks to file
@@ -139,13 +143,7 @@ public class Rainbow {
         System.out.println(" What can I do for you?");
     }
 
-    public static void main(String[] args) {
-        // Load tasks from file
-        loadTasks();
-
-        // Rename & Greet
-        greet();
-
+    private static void run(){
         // Input scanner
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -341,5 +339,16 @@ public class Rainbow {
             }
         }
         scanner.close();
+    }
+
+    public static void main(String[] args) {
+        // Load tasks from file
+        loadTasks();
+
+        // Rename & Greet
+        greet();
+
+        // Runner class
+        run();
     }
 }
