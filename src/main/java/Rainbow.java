@@ -342,6 +342,9 @@ public class Rainbow {
     }
 
     public static void main(String[] args) {
+        // New code
+        DataManager dataManager = new DataManager("./data/duke.txt");
+
         // Load tasks from file
         loadTasks();
 
