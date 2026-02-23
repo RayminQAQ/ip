@@ -1,146 +1,15 @@
+import javax.swing.*;
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 
 public class Rainbow {
 
     static ArrayList<Task> storeItems = new ArrayList<>();
-    private static final String FILE_PATH = "./data/duke.txt";
-
-    private static void printHorizontalLine() {
-        String horizontalLine = "____________________________________________________________";
-        System.out.println(horizontalLine);
-    }
-
-    /**
-     * Saves all tasks to the data file.
-     */
-    private static void saveTasks() {
-        try {
-            // Create directory if it doesn't exist
-            File file = new File(FILE_PATH);
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                boolean created = parentDir.mkdirs();
-                if (!created) {
-                    System.out.println(" Error: Failed to create data directory.");
-                    return;
-                }
-            }
-
-            // Write tasks to file
-            FileWriter writer = new FileWriter(FILE_PATH);
-            for (Task task : storeItems) {
-                String line = taskToFileFormat(task);
-                writer.write(line + System.lineSeparator());
-            }
-            writer.close();
-        } catch (IOException e) {
-            System.out.println(" Error saving tasks to file: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Converts a Task object to file format string.
-     * Format: TYPE | DONE | DESCRIPTION | [EXTRA_INFO]
-     */
-    private static String taskToFileFormat(Task task) {
-        String type = "";
-        String isDone = task.isDone ? "1" : "0";
-        String details = "";
-
-        if (task instanceof Todo) {
-            type = "T";
-            details = task.description;
-        } else if (task instanceof Deadline) {
-            type = "D";
-            Deadline deadline = (Deadline) task;
-            details = task.description + " | " + deadline.by;
-        } else if (task instanceof Event) {
-            type = "E";
-            Event event = (Event) task;
-            details = task.description + " | " + event.from + " | " + event.to;
-        }
-
-        return type + " | " + isDone + " | " + details;
-    }
-
-    /**
-     * Loads tasks from the data file.
-     */
-    private static void loadTasks() {
-        try {
-            File file = new File(FILE_PATH);
-            if (!file.exists()) {
-                return; // No file to load, start fresh
-            }
-
-            Scanner fileScanner = new Scanner(file);
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                Task task = parseTaskFromFile(line);
-                if (task != null) {
-                    storeItems.add(task);
-                }
-            }
-            fileScanner.close();
-        } catch (FileNotFoundException e) {
-            // File doesn't exist, start with empty list
-        } catch (Exception e) {
-            System.out.println(" Error loading tasks from file: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Parses a line from the file and creates a Task object.
-     * Format: TYPE | DONE | DESCRIPTION | [EXTRA_INFO]
-     */
-    private static Task parseTaskFromFile(String line) {
-        try {
-            String[] parts = line.split(" \\| ");
-            if (parts.length < 3) {
-                return null;
-            }
-
-            String type = parts[0];
-            boolean isDone = parts[1].equals("1");
-            String description = parts[2];
-
-            Task task = null;
-
-            switch (type) {
-                case "T":
-                    task = new Todo(description);
-                    break;
-                case "D":
-                    String by = parts.length > 3 ? parts[3] : "";
-                    task = new Deadline(description, by);
-                    break;
-                case "E":
-                    String from = parts.length > 3 ? parts[3] : "";
-                    String to = parts.length > 4 ? parts[4] : "";
-                    task = new Event(description, from, to);
-                    break;
-            }
-
-            if (task != null && isDone) {
-                task.markAsDone();
-            }
-
-            return task;
-        } catch (Exception e) {
-            System.out.println(" Error parsing task: " + line);
-            return null;
-        }
-    }
+    static DataManager dataManager = new DataManager("./data/duke.txt");
+    static UIManager uiManager = new UIManager();
 
     private static void greet() {
-        printHorizontalLine();
-        System.out.println(" Hello! I'm Rainbow");
-        System.out.println(" What can I do for you?");
+        uiManager.showGreeting();
     }
 
     private static void run(){
@@ -154,15 +23,12 @@ public class Rainbow {
             String details = partstest.length > 1 ? partstest[1] : "";
 
             // Print user input
-            printHorizontalLine();
-            System.out.println(" " + userinput);
+            uiManager.showUserInput(userinput);
 
             // Exit
             if (command.equals("bye")) { // Exit
                 // Print message
-                printHorizontalLine();
-                System.out.println(" Bye. Hope to see you again soon!");
-                printHorizontalLine();
+                uiManager.showGoodbye();
 
                 // Exit
                 break;
@@ -171,18 +37,11 @@ public class Rainbow {
             // Other operations
             if (command.equals("list")) {
                 // Print message
-                printHorizontalLine();
-                System.out.println(" Here are the tasks in your list:");
-                for (int index = 0; index < storeItems.size(); index++) { // Loop through internal storage
-                    System.out.println(" " + (index + 1) + ". " + storeItems.get(index));
-                }
-                printHorizontalLine();
+                uiManager.showTaskList(storeItems);
             } else if (command.startsWith("todo")) {
                 // Error checking
                 if (details.isEmpty()) {
-                    printHorizontalLine();
-                    System.out.println(" OOPS!!! The description of a todo cannot be empty.");
-                    printHorizontalLine();
+                    uiManager.showEmptyTodoError();
                     continue;
                 }
 
@@ -194,20 +53,14 @@ public class Rainbow {
                 storeItems.add(todo);
 
                 // Save to file
-                saveTasks();
+                dataManager.saveTasks(storeItems);
 
                 // Print message
-                printHorizontalLine();
-                System.out.println(" Got it. I've added this task:");
-                System.out.println("   " + todo);
-                System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
-                printHorizontalLine();
+                uiManager.showTaskAdded(todo, storeItems.size());
             } else if (command.startsWith("deadline")) {
                 // Error cheching if description is empty
                 if (details.isEmpty()) {
-                    printHorizontalLine();
-                    System.out.println(" OOPS!!! The description of a deadline cannot be empty.");
-                    printHorizontalLine();
+                    uiManager.showEmptyDeadlineError();
                     continue;
                 }
 
@@ -221,20 +74,14 @@ public class Rainbow {
                 storeItems.add(deadline);
 
                 // Save to file
-                saveTasks();
+                dataManager.saveTasks(storeItems);
 
                 // Print message
-                printHorizontalLine();
-                System.out.println(" Got it. I've added this task:");
-                System.out.println("   " + deadline);
-                System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
-                printHorizontalLine();
+                uiManager.showTaskAdded(deadline, storeItems.size());
             } else if (command.startsWith("event")) {
                 // Error checking if description is empty
                 if (details.isEmpty()) {
-                    printHorizontalLine();
-                    System.out.println(" OOPS!!! The description of an event cannot be empty.");
-                    printHorizontalLine();
+                    uiManager.showEmptyEventError();
                     continue;
                 }
 
@@ -256,14 +103,10 @@ public class Rainbow {
                 storeItems.add(event);
 
                 // Save to file
-                saveTasks();
+                dataManager.saveTasks(storeItems);
 
                 // Print message
-                printHorizontalLine();
-                System.out.println(" Got it. I've added this task:");
-                System.out.println("   " + event);
-                System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
-                printHorizontalLine();
+                uiManager.showTaskAdded(event, storeItems.size());
             } else if (command.startsWith("mark")) {
                 // Operation
                 String[] parts = userinput.split(" ");
@@ -271,13 +114,10 @@ public class Rainbow {
                 storeItems.get(index).markAsDone();
 
                 // Save to file
-                saveTasks();
+                dataManager.saveTasks(storeItems);
 
                 // Print
-                printHorizontalLine();
-                System.out.println(" Nice! I've marked this task as done:");
-                System.out.println(storeItems.get(index));
-                printHorizontalLine();
+                uiManager.showTaskMarked(storeItems.get(index));
             } else if (command.startsWith("unmark")) {
                 // Operation
                 String[] parts = userinput.split(" ");
@@ -285,19 +125,14 @@ public class Rainbow {
                 storeItems.get(index).markAsNotDone();
 
                 // Save to file
-                saveTasks();
+                dataManager.saveTasks(storeItems);
 
                 // Print
-                printHorizontalLine();
-                System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println(storeItems.get(index));
-                printHorizontalLine();
+                uiManager.showTaskUnmarked(storeItems.get(index));
             } else if (command.startsWith("delete")) {
                 // Error checking if index is missing
                 if (details.isEmpty()) {
-                    printHorizontalLine();
-                    System.out.println(" OOPS!!! Please specify which task to delete.");
-                    printHorizontalLine();
+                    uiManager.showMissingDeleteIndexError();
                     continue;
                 }
 
@@ -307,9 +142,7 @@ public class Rainbow {
 
                     // Check if index is valid
                     if (index < 0 || index >= storeItems.size()) {
-                        printHorizontalLine();
-                        System.out.println(" OOPS!!! Invalid task number.");
-                        printHorizontalLine();
+                        uiManager.showInvalidTaskNumberError();
                         continue;
                     }
 
@@ -320,33 +153,24 @@ public class Rainbow {
                     storeItems.remove(index);
 
                     // Save to file
-                    saveTasks();
+                    dataManager.saveTasks(storeItems);
 
                     // Print message
-                    printHorizontalLine();
-                    System.out.println(" Noted. I've removed this task:");
-                    System.out.println("   " + removedTask);
-                    System.out.println(" Now you have " + storeItems.size() + " tasks in the list.");
-                    printHorizontalLine();
+                    uiManager.showTaskDeleted(removedTask, storeItems.size());
                 } catch (NumberFormatException e) {
-                    printHorizontalLine();
-                    System.out.println(" OOPS!!! Please provide a valid task number.");
-                    printHorizontalLine();
+                    uiManager.showInvalidNumberFormatError();
                 }
             } else {
                 // Unknown command
-                System.out.println(" I'm sorry, I don't understand that command.");
+                uiManager.showUnknownCommandError();
             }
         }
         scanner.close();
     }
 
     public static void main(String[] args) {
-        // New code
-        DataManager dataManager = new DataManager("./data/duke.txt");
-
         // Load tasks from file
-        loadTasks();
+        storeItems = dataManager.loadTasks();
 
         // Rename & Greet
         greet();
