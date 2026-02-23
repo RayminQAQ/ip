@@ -8,10 +8,6 @@ public class Rainbow {
     static DataManager dataManager = new DataManager("./data/duke.txt");
     static UIManager uiManager = new UIManager();
 
-    private static void greet() {
-        uiManager.showGreeting();
-    }
-
     private static void run(){
         // Input scanner
         Scanner scanner = new Scanner(System.in);
@@ -173,7 +169,7 @@ public class Rainbow {
         storeItems = dataManager.loadTasks();
 
         // Rename & Greet
-        greet();
+        uiManager.showGreeting();
 
         // Runner class
         run();
