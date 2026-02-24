@@ -3,12 +3,23 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Represents a deadline task that needs to be completed by a specific date/time.
+ * The deadline can be specified as a date only or with time.
+ * Supports multiple date formats including yyyy-MM-dd and d/M/yyyy.
+ */
 public class Deadline extends Task {
 
     protected String by;
     protected LocalDateTime byDateTime;
     protected LocalDate byDate;
 
+    /**
+     * Creates a new Deadline with the given description and deadline date/time.
+     *
+     * @param description The description of the deadline task.
+     * @param by The deadline date/time as a string (e.g., "2019-12-02", "2/12/2019 1800").
+     */
     public Deadline(String description, String by) {
         super(description);
         this.by = by;
@@ -24,6 +35,9 @@ public class Deadline extends Task {
      * - yyyy-MM-dd (e.g., 2019-12-02)
      * - d/M/yyyy HHmm (e.g., 2/12/2019 1800)
      * - d/M/yyyy (e.g., 2/12/2019)
+     * If parsing fails, the original string is retained.
+     *
+     * @param dateStr The date string to parse.
      */
     private void parseDate(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) {
@@ -66,18 +80,40 @@ public class Deadline extends Task {
         // If all parsing fails, keep as string
     }
 
+    /**
+     * Returns the deadline as a LocalDateTime object if it includes time.
+     *
+     * @return The deadline as LocalDateTime, or null if not parsed or no time specified.
+     */
     public LocalDateTime getByDateTime() {
         return byDateTime;
     }
 
+    /**
+     * Returns the deadline as a LocalDate object if it's a date only.
+     *
+     * @return The deadline as LocalDate, or null if not parsed or time was specified.
+     */
     public LocalDate getByDate() {
         return byDate;
     }
 
+    /**
+     * Returns the original deadline string as provided by the user.
+     *
+     * @return The original deadline string.
+     */
     public String getByString() {
         return by;
     }
 
+    /**
+     * Returns a string representation of the deadline task.
+     * Format: [D][status] description (by: formatted_date)
+     * Dates are formatted as "MMM d yyyy" or "MMM d yyyy, h:mma" if time is included.
+     *
+     * @return A formatted string showing the deadline with its type, status, and due date.
+     */
     @Override
     public String toString() {
         if (this.by.equals("")) {
