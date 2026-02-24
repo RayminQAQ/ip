@@ -160,20 +160,15 @@ public class Rainbow {
                     uiManager.showInvalidNumberFormatError();
                 }
             } else if (command.startsWith("find")) {
-                // Find tasks on a specific date
-                // Usage: find 2019-12-02 or find 2/12/2019
+                // Find tasks by keyword in description
+                // Usage: find book
                 if (details.isEmpty()) {
-                    uiManager.showInvalidDateFormatError();
+                    uiManager.showEmptyFindKeywordError();
                     continue;
                 }
 
-                try {
-                    LocalDate searchDate = parseDate(details);
-                    ArrayList<Task> matchingTasks = findTasksOnDate(searchDate);
-                    uiManager.showTasksOnDate(matchingTasks, searchDate.format(DateTimeFormatter.ofPattern("MMM d yyyy")));
-                } catch (DateTimeParseException e) {
-                    uiManager.showInvalidDateFormatError();
-                }
+                ArrayList<Task> matchingTasks = findTasksByKeyword(details);
+                uiManager.showMatchingTasks(matchingTasks);
             } else {
                 // Unknown command
                 uiManager.showUnknownCommandError();
@@ -201,6 +196,22 @@ public class Rainbow {
         }
 
         throw new DateTimeParseException("Unable to parse date", dateStr, 0);
+    }
+
+    /**
+     * Finds all tasks that contain the keyword in their description.
+     */
+    private static ArrayList<Task> findTasksByKeyword(String keyword) {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+
+        for (Task task : storeItems) {
+            if (task.description.toLowerCase().contains(lowerKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+
+        return matchingTasks;
     }
 
     /**
