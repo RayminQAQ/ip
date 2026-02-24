@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * Manages all user interface interactions and output display.
+ * Handles formatting and printing of messages, task lists, and error messages
+ * to provide a consistent user experience throughout the application.
+ */
 public class UIManager {
 
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
@@ -22,6 +27,8 @@ public class UIManager {
 
     /**
      * Prints the user input with horizontal line.
+     *
+     * @param input The user's input command to display.
      */
     public void showUserInput(String input) {
         printHorizontalLine();
@@ -39,6 +46,8 @@ public class UIManager {
 
     /**
      * Prints the task list.
+     *
+     * @param tasks The list of tasks to display.
      */
     public void showTaskList(ArrayList<Task> tasks) {
         printHorizontalLine();
@@ -51,6 +60,9 @@ public class UIManager {
 
     /**
      * Prints message when a task is added.
+     *
+     * @param task The task that was added.
+     * @param totalTasks The total number of tasks in the list after addition.
      */
     public void showTaskAdded(Task task, int totalTasks) {
         printHorizontalLine();
@@ -62,6 +74,8 @@ public class UIManager {
 
     /**
      * Prints message when a task is marked as done.
+     *
+     * @param task The task that was marked as done.
      */
     public void showTaskMarked(Task task) {
         printHorizontalLine();
@@ -72,6 +86,8 @@ public class UIManager {
 
     /**
      * Prints message when a task is unmarked.
+     *
+     * @param task The task that was marked as not done.
      */
     public void showTaskUnmarked(Task task) {
         printHorizontalLine();
@@ -82,6 +98,9 @@ public class UIManager {
 
     /**
      * Prints message when a task is deleted.
+     *
+     * @param task The task that was deleted.
+     * @param totalTasks The total number of tasks remaining in the list.
      */
     public void showTaskDeleted(Task task, int totalTasks) {
         printHorizontalLine();
@@ -154,6 +173,9 @@ public class UIManager {
 
     /**
      * Prints tasks occurring on a specific date.
+     *
+     * @param tasks The list of tasks occurring on the specified date.
+     * @param dateStr The date string to display in the message.
      */
     public void showTasksOnDate(ArrayList<Task> tasks, String dateStr) {
         printHorizontalLine();
@@ -179,6 +201,8 @@ public class UIManager {
 
     /**
      * Prints matching tasks from find command.
+     *
+     * @param tasks The list of tasks matching the search keyword.
      */
     public void showMatchingTasks(ArrayList<Task> tasks) {
         printHorizontalLine();

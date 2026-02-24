@@ -5,12 +5,22 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Rainbow is a task management chatbot application.
+ * It allows users to manage todos, deadlines, and events through a command-line interface.
+ * Tasks are persisted to disk and can be searched, marked as done, and deleted.
+ */
 public class Rainbow {
 
     static ArrayList<Task> storeItems = new ArrayList<>();
     static DataManager dataManager = new DataManager("./data/duke.txt");
     static UIManager uiManager = new UIManager();
 
+    /**
+     * Runs the main command loop of the chatbot.
+     * Continuously reads user input, processes commands, and displays appropriate responses
+     * until the user enters the 'bye' command.
+     */
     private static void run(){
         // Input scanner
         Scanner scanner = new Scanner(System.in);
@@ -179,6 +189,11 @@ public class Rainbow {
 
     /**
      * Parses a date string in multiple formats.
+     * Supports both yyyy-MM-dd and d/M/yyyy date formats.
+     *
+     * @param dateStr The date string to parse.
+     * @return A LocalDate object representing the parsed date.
+     * @throws DateTimeParseException If the date string cannot be parsed in any supported format.
      */
     private static LocalDate parseDate(String dateStr) throws DateTimeParseException {
         String[] formats = {
@@ -200,6 +215,10 @@ public class Rainbow {
 
     /**
      * Finds all tasks that contain the keyword in their description.
+     * The search is case-insensitive and matches partial descriptions.
+     *
+     * @param keyword The keyword to search for in task descriptions.
+     * @return An ArrayList of tasks whose descriptions contain the keyword.
      */
     private static ArrayList<Task> findTasksByKeyword(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
@@ -216,6 +235,11 @@ public class Rainbow {
 
     /**
      * Finds all tasks that occur on a specific date.
+     * Searches through deadlines and events to find tasks matching the given date.
+     * For events, both start and end dates are checked.
+     *
+     * @param date The date to search for.
+     * @return An ArrayList of tasks occurring on the specified date.
      */
     private static ArrayList<Task> findTasksOnDate(LocalDate date) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
@@ -246,6 +270,13 @@ public class Rainbow {
         return matchingTasks;
     }
 
+    /**
+     * The main entry point of the Rainbow application.
+     * Initializes the application by loading tasks from disk,
+     * displaying the greeting, and starting the command loop.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         // Load tasks from file
         storeItems = dataManager.loadTasks();
