@@ -176,4 +176,29 @@ public class UIManager {
         System.out.println(" OOPS!!! Invalid date format. Please use yyyy-MM-dd or d/M/yyyy format.");
         printHorizontalLine();
     }
+
+    /**
+     * Prints matching tasks from find command.
+     */
+    public void showMatchingTasks(ArrayList<Task> tasks) {
+        printHorizontalLine();
+        if (tasks.isEmpty()) {
+            System.out.println(" No matching tasks found in your list.");
+        } else {
+            System.out.println(" Here are the matching tasks in your list:");
+            for (int index = 0; index < tasks.size(); index++) {
+                System.out.println(" " + (index + 1) + "." + tasks.get(index));
+            }
+        }
+        printHorizontalLine();
+    }
+
+    /**
+     * Prints error message for empty find keyword.
+     */
+    public void showEmptyFindKeywordError() {
+        printHorizontalLine();
+        System.out.println(" OOPS!!! Please provide a keyword to search for.");
+        printHorizontalLine();
+    }
 }
